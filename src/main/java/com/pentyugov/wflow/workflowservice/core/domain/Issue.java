@@ -28,13 +28,13 @@ public class Issue extends BaseEntity {
     private String comment;
 
     @Field(name = "userId")
-    private UUID userId;
+    private String userId;
 
     @Field(name = "initiatorId")
-    private UUID initiatorId;
+    private String initiatorId;
 
     @Field(name = "executorId")
-    private UUID executorId;
+    private String executorId;
 
     @Field(name = "card")
     private Card card;

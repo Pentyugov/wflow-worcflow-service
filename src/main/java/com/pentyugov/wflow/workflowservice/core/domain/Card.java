@@ -32,7 +32,7 @@ public class Card extends BaseEntity {
     private Card parentCard;
 
     @Field(name = "creatorId")
-    private String creatorId;
+    private UUID creatorId;
 
     @Field(name = "issue")
     private Issue issue;

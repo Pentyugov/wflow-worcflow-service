@@ -1,66 +1,57 @@
 package com.pentyugov.wflow.workflowservice.web.controller;
 
-
 import com.pentyugov.wflow.workflowservice.core.domain.Project;
-import com.pentyugov.wflow.workflowservice.core.domain.Task;
-import com.pentyugov.wflow.workflowservice.core.dto.ProjectDto;
 import com.pentyugov.wflow.workflowservice.core.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.Date;
+import java.util.UUID;
+
+import static com.pentyugov.wflow.workflowservice.core.system.application.ApplicationConstants.Routes.PROJECTS_ENDPOINT;
 
 @RestController
-@RequestMapping("/api/v1/projects")
+@RequestMapping(PROJECTS_ENDPOINT)
 @RequiredArgsConstructor
 public class ProjectController {
 
-    private final ProjectService<Project, ProjectDto> projectService;
+    private final ProjectService projectService;
 
-    @GetMapping
-    public Flux<Project> getAll() {
-        return projectService.getAll();
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getAll() {
+        return ResponseEntity
+                .ok()
+                .body(projectService.getAll());
     }
 
-    @GetMapping("/{id}")
-    public Mono<Project> getById(@PathVariable String id) {
-        return projectService.getById(id);
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getById(@PathVariable String id) {
+        return ResponseEntity
+                .ok()
+                .body(projectService.getById(UUID.fromString(id)));
     }
 
-    @PostMapping
-    public Mono<Project> add(@RequestBody Project task) {
-        return projectService.add(task);
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> add(@RequestBody Project project) {
+        return ResponseEntity
+                .ok()
+                .body(projectService.add(project));
     }
 
-    @PutMapping
-    public Mono<Project> update(@RequestBody Project task) {
-        return projectService.update(task);
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> update(@RequestBody Project project) {
+        return ResponseEntity
+                .ok()
+                .body(projectService.update(project));
     }
 
-    @DeleteMapping("/{id}")
-    public Mono<Project> delete(@PathVariable String id) {
-        return projectService.delete(id);
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> update(@PathVariable String id) {
+        projectService.delete(id);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
-
-    @PostMapping("/test")
-    public Mono<Project> createTestData() {
-        Project project = new Project();
-        project.setCreatorId("06abde37-e3ed-451e-84bf-3496a4359bf1");
-        project.setName("Test project");
-        project.setCode("001-PR");
-        project.setProjectManagerId("adf21cc7-958e-4690-bb0a-78fe1571a0a8");
-        project.setContractorId("8300580d-ce06-4ab8-a803-c911652372e7");
-        project.setConclusionDate(new Date());
-        project.setDueDate(new Date());
-        project.setClosingDate(new Date());
-        project.setStatus(10);
-        project.setProjectParticipantsIds(Arrays.asList("adf21cc7-958e-4690-bb0a-78fe1571a0a8", "06abde37-e3ed-451e-84bf-3496a4359bf1"));
-
-        return projectService.add(project);
-    }
-
 
 }

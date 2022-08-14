@@ -1,13 +1,26 @@
 package com.pentyugov.wflow.workflowservice.core.service;
 
 import com.pentyugov.wflow.workflowservice.core.domain.Project;
-import com.pentyugov.wflow.workflowservice.core.domain.Task;
-import com.pentyugov.wflow.workflowservice.core.dto.BaseDto;
-import com.pentyugov.wflow.workflowservice.core.dto.ProjectDto;
-import reactor.core.publisher.Mono;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+
+import java.util.List;
+import java.util.UUID;
 
 
-public interface ProjectService<T extends Project, E extends ProjectDto> extends EntityService<T, E> {
-    String NAME = "wflow$ProjectService";
+public interface ProjectService {
+    String NAME = "workflow$ProjectService";
+
+    List<Project> getAll();
+
+    Project getById(UUID id);
+
+    Project add(Project entity);
+
+    Project update(Project entity);
+
+    Project delete(String id);
+
+    void setSoftDeletion(Boolean softDeletion);
 
 }

@@ -18,7 +18,7 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "tasks")
+@Document(collection = "task")
 public class Task extends Card {
 
     @Transient
@@ -91,8 +91,8 @@ public class Task extends Card {
     private Integer kanbanOrder;
 
     @Field(name = "executorId")
-    private String executorId;
+    private UUID executorId;
 
     @Field(name = "initiatorId")
-    private String initiatorId;
+    private UUID initiatorId;
 }

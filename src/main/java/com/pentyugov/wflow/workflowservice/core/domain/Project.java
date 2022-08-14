@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -17,13 +18,14 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "projects")
+@Document(collection = "project")
 public class Project extends Card {
 
     @Field(name = "name")
     private String name;
 
     @Field(name = "code")
+    @Indexed(unique = true)
     private String code;
 
     @Field(name = "status")
@@ -45,5 +47,5 @@ public class Project extends Card {
     private List<String> projectParticipantsIds;
 
     @Field(name = "contractorId")
-    private String contractorId;
+    private UUID contractorId;
 }
