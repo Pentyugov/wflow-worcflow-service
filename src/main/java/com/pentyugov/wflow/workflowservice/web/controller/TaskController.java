@@ -2,6 +2,7 @@ package com.pentyugov.wflow.workflowservice.web.controller;
 
 import com.pentyugov.wflow.workflowservice.core.domain.Task;
 import com.pentyugov.wflow.workflowservice.core.service.TaskService;
+import com.pentyugov.wflow.workflowservice.web.feign.FeignClientService;
 import com.pentyugov.wflow.workflowservice.web.payload.FiltersRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import static com.pentyugov.wflow.workflowservice.core.system.application.Applic
 public class TaskController {
 
     private final TaskService taskService;
+    private final FeignClientService feignClientService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAll(@RequestHeader HttpHeaders headers) {
@@ -75,6 +77,11 @@ public class TaskController {
         return ResponseEntity
                 .noContent()
                 .build();
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Object> test() {
+        return feignClientService.getWorkflowUser();
     }
 
     private UUID getUserId(HttpHeaders headers) {

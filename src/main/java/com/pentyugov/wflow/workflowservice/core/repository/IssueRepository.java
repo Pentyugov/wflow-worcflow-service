@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+// TODO rewrite queries
 public interface IssueRepository extends MongoRepository<Issue, ObjectId> {
 
     @Transactional(readOnly = true)

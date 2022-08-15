@@ -2,7 +2,6 @@ package com.pentyugov.wflow.workflowservice.core.system.config;
 
 import com.mongodb.client.MongoClient;
 import com.pentyugov.wflow.workflowservice.core.domain.BaseEntity;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

@@ -3,7 +3,6 @@ package com.pentyugov.wflow.workflowservice.core.service.impl;
 import com.pentyugov.wflow.workflowservice.core.domain.BaseEntity;
 import com.pentyugov.wflow.workflowservice.core.service.FilterService;
 import com.pentyugov.wflow.workflowservice.web.payload.FiltersRequest;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
