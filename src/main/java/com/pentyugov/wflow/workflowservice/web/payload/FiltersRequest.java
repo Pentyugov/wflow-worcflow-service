@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class FiltersRequest {
 
-    private User user;
     private List<UUID> ids;
     private List<Filter> filters;
 

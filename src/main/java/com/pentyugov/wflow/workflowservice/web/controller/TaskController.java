@@ -2,7 +2,6 @@ package com.pentyugov.wflow.workflowservice.web.controller;
 
 import com.pentyugov.wflow.workflowservice.core.domain.Task;
 import com.pentyugov.wflow.workflowservice.core.service.TaskService;
-import com.pentyugov.wflow.workflowservice.web.feign.FeignClientService;
 import com.pentyugov.wflow.workflowservice.web.payload.FiltersRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -21,80 +20,55 @@ import static com.pentyugov.wflow.workflowservice.core.system.application.Applic
 public class TaskController {
 
     private final TaskService taskService;
-    private final FeignClientService feignClientService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getAll(@RequestHeader HttpHeaders headers) {
-        UUID userId = getUserId(headers);
+    public ResponseEntity<Object> getAll() {
         return ResponseEntity
                 .ok()
-                .body(taskService.getAll(userId));
+                .body(taskService.getAll());
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getById(@RequestHeader HttpHeaders headers, @PathVariable String id) {
-        UUID userId = getUserId(headers);
+    public ResponseEntity<Object> getById(@PathVariable String id) {
         return ResponseEntity
                 .ok()
-                .body(taskService.getById(userId, UUID.fromString(id)));
+                .body(taskService.getById(UUID.fromString(id)));
     }
 
     @GetMapping(path = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getFiltered(@RequestHeader HttpHeaders headers, @RequestBody FiltersRequest request) {
-        UUID userId = getUserId(headers);
+    public ResponseEntity<Object> getFiltered(@RequestBody FiltersRequest request) {
         return ResponseEntity
                 .ok()
-                .body(taskService.getFiltered(userId, request));
+                .body(taskService.getFiltered(request));
     }
 
     @GetMapping("/{id}/history")
-    public ResponseEntity<Object> getTaskHistory(@RequestHeader HttpHeaders headers, @PathVariable String id) {
-        UUID userId = getUserId(headers);
-        Task task = taskService.getById(userId, UUID.fromString(id));
-        return new ResponseEntity<>(taskService.getTaskHistory(userId, task), HttpStatus.OK);
+    public ResponseEntity<Object> getTaskHistory(@PathVariable String id) {
+        Task task = taskService.getById(UUID.fromString(id));
+        return new ResponseEntity<>(taskService.getTaskHistory(task), HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> add(@RequestHeader HttpHeaders headers, @RequestBody Task task) {
-        UUID userId = getUserId(headers);
+    public ResponseEntity<Object> add(@RequestBody Task task) {
         return ResponseEntity
                 .ok()
-                .body(taskService.add(userId, task));
+                .body(taskService.add(task));
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> update(@RequestHeader HttpHeaders headers, @RequestBody Task task) {
-        UUID userId = getUserId(headers);
+    public ResponseEntity<Object> update(@RequestBody Task task) {
         return ResponseEntity
                 .ok()
-                .body(taskService.update(userId, task));
+                .body(taskService.update(task));
     }
 
     @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> update(@RequestHeader HttpHeaders headers, @PathVariable String id) {
-        UUID userId = getUserId(headers);
-        taskService.delete(userId, id);
+    public ResponseEntity<Object> update(@PathVariable String id) {
+        taskService.delete(id);
         return ResponseEntity
                 .noContent()
                 .build();
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Object> test() {
-        return feignClientService.getWorkflowUser();
-    }
-
-    private UUID getUserId(HttpHeaders headers) {
-        UUID userId = null;
-        if (headers.get("user-id") != null) {
-            String id = headers.get("user-id").get(0);
-            try {
-                userId = UUID.fromString(id);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid userId");
-            }
-        }
-        return userId;
-    }
 
 }

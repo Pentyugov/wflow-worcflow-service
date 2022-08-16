@@ -6,19 +6,17 @@ import com.pentyugov.wflow.workflowservice.core.domain.Task;
 import com.pentyugov.wflow.workflowservice.core.service.FilterService;
 import com.pentyugov.wflow.workflowservice.core.service.IssueService;
 import com.pentyugov.wflow.workflowservice.core.service.TaskService;
-import com.pentyugov.wflow.workflowservice.core.service.UserService;
+import com.pentyugov.wflow.workflowservice.core.service.UserSessionService;
 import com.pentyugov.wflow.workflowservice.core.system.application.User;
 import com.pentyugov.wflow.workflowservice.core.system.config.EntityMongoTemplate;
 import com.pentyugov.wflow.workflowservice.core.util.EntityUtil;
 import com.pentyugov.wflow.workflowservice.web.payload.FiltersRequest;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,20 +29,20 @@ public class TaskServiceImpl implements TaskService {
     private Boolean softDeletion = Boolean.TRUE;
 
     private final EntityMongoTemplate entityMongoTemplate;
-    private final UserService userService;
+    private final UserSessionService userSessionService;
     private final FilterService filterService;
 
     private final IssueService issueService;
 
     @Override
-    public List<Task> getAll(UUID userId) {
+    public List<Task> getAll() {
         return entityMongoTemplate.findAll(Task.class);
     }
 
-    private List<Task> getAllTasksForUser(UUID userId, User user) {
+    private List<Task> getAllTasksForUser(User user) {
 
-        if (userService.isCurrentUserAdmin(user)) {
-            return getAll(userId);
+        if (userSessionService.isUserAdmin()) {
+            return getAll();
         } else {
             Query query = new Query();
             query.addCriteria(
@@ -59,14 +57,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getFiltered(UUID userId, FiltersRequest request) {
+    public List<Task> getFiltered(FiltersRequest request) {
         List<UUID> availableTasksIds;
         if (!CollectionUtils.isEmpty(request.getIds())) {
             availableTasksIds = request.getIds();
         } else {
-            availableTasksIds =
-
-            getAllTasksForUser(userId, request.getUser())
+            availableTasksIds = getAllTasksForUser(userSessionService.getCurrentUser())
                     .stream()
                     .map(Task::getId)
                     .collect(Collectors.toList());
@@ -77,7 +73,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<CardHistory> getTaskHistory(UUID userId, Task task) {
+    public List<CardHistory> getTaskHistory(Task task) {
         List<Issue> issues = issueService.getAllIssuesByCard(task);
         List<CardHistory> result = new ArrayList<>();
         issues.forEach(issue -> result.add(issueService.createCardHistoryDto(issue)));
@@ -85,18 +81,18 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task getById(UUID userId, UUID id) {
+    public Task getById(UUID id) {
         return entityMongoTemplate.findById(id, Task.class);
     }
 
     @Override
-    public Task add(UUID userId, Task entity) {
+    public Task add(Task entity) {
         return entityMongoTemplate.saveEntity(entity);
     }
 
     @Override
-    public Task update(UUID userId, Task task) {
-        Task entity = getById(userId, task.getId());
+    public Task update(Task task) {
+        Task entity = getById(task.getId());
         if (entity != null) {
             EntityUtil.copyProperties(task, entity);
             entity = entityMongoTemplate.updateEntity(entity);
@@ -105,11 +101,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task delete(UUID userId, String id) {
+    public void delete(String id) {
         if (softDeletion) {
-            return entityMongoTemplate.softDelete(id, Task.class);
+            entityMongoTemplate.softDelete(id, Task.class);
+            return;
         }
-        return entityMongoTemplate.removeById(id, Task.class);
+        entityMongoTemplate.removeById(id, Task.class);
     }
 
     @Override

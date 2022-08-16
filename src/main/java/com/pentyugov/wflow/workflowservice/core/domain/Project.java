@@ -44,7 +44,7 @@ public class Project extends Card {
     private String projectManagerId;
 
     @Field(name = "projectParticipantsIds")
-    private List<String> projectParticipantsIds;
+    private List<UUID> projectParticipantsIds;
 
     @Field(name = "contractorId")
     private UUID contractorId;
